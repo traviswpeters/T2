@@ -70,8 +70,7 @@ if __FILE__ == $PROGRAM_NAME
   #TODO: if @lines is empty or only spaces, the line should display "empty string"
 
   # TEST empty string
-  puts text.out_string
-  #text.construct("")
+  text.construct("")
   text.display
 
   # TEST 'clear!'
