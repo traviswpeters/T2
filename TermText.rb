@@ -1,4 +1,5 @@
-require 'TermChars'
+require 'optparse'
+require 'termchars'
 
 class TermText
 
@@ -28,7 +29,8 @@ class TermText
   def construct(str = "")
     str.empty? ? str = @out_string : @out_string = str
 
-    str.each_char{ |char|
+    str.split("").each{ |char|
+#    str.each_char{ |char| # broken/not suported in Ruby 1.8
       case char
       when "a".."z"
         append(send(char.to_sym))
@@ -55,30 +57,55 @@ class TermText
 
 end #TermText
 
-# MAIN
-if __FILE__ == $PROGRAM_NAME
+def options 
+  OptionParser.new do |o|
+    o.on('-i') { |b| $interactive = b }
+    o.on('-h') { puts o; exit }
+    o.parse!
+  end
+end
 
+def run_tests
   # TEST initialization & implemented characters
   text = TermText.new
+  puts "Display the alphabet:"
   text.out_string = "abcdefghijklmnopqrstuvwxyz"
   text.construct
   text.display
 
   # TEST unimplemented characters
+  puts "Display unimplemented characters:"
   text.construct("~ ! @ # $ % ^ & * ( ) - _ = + [ ] { } \\ | / . , < >")
-  text.display(true)
+  text.display
+
   #TODO: if @lines is empty or only spaces, the line should display "empty string"
 
   # TEST empty string
+  puts "Display the empty string text:"
   text.construct("")
   text.display
 
-  # TEST 'clear!'
+  # TEST 'clear!' method where the default is to "clear" the out_string
   text.construct("LOCA")
   text.display
   text.construct("Peters")
   text.display(false)
   text.construct("abcd")
   text.display(true)
+end
+
+def run_input
+  text = TermText.new
+  text.out_string = ARGV.join(" ")
+  text.construct
+  text.display
+end
+
+# MAIN
+if __FILE__ == $PROGRAM_NAME
+
+  options
+
+  ARGV.size > 0 ? run_input : run_tests
 
 end
